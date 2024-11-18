@@ -1,6 +1,5 @@
 .DS_Store
 Thumbs.db
-__pycache__/
 *.pyc
 *.log
 *.swp
@@ -8,4 +7,6 @@ __pycache__/
 *.bak
 *.tmp
 *.temp
-
+/src/__pycache__/
+/src/old/
+/src/game/__pycache__/

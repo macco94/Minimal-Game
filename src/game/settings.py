@@ -1,3 +1,4 @@
+import os
 
 # Dimensioni dello schermo
 WIDTH, HEIGHT = 800, 600
