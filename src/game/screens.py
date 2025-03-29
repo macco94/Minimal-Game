@@ -2,6 +2,109 @@ import pygame
 import sys
 from settings import WIDTH, HEIGHT, TEXT_COLOR
 
+
+class OptionSlider:
+    def __init__(self, label, min_value, max_value, step, default, font, screen_rect, index, total_sliders):
+        self.label = label
+        self.min = min_value
+        self.max = max_value
+        self.step = step
+        self.value = default
+        self.font = font
+        self.width = 300
+        self.height = 20
+        self.handle_radius = 10
+        self.dragging = False
+
+        self.rect = pygame.Rect(0, 0, self.width, self.height)
+        self.rect.centerx = screen_rect.centerx
+        vertical_spacing = 80
+        total_height = total_sliders * vertical_spacing
+        start_y = screen_rect.centery - total_height // 2
+        self.rect.y = start_y + index * vertical_spacing
+
+        self.label_surface = self.font.render(f"{self.label}: {self.value}", True, TEXT_COLOR)
+        self.label_rect = self.label_surface.get_rect(midbottom=(self.rect.centerx, self.rect.top - 10))
+
+    def draw(self, screen):
+        self.label_surface = self.font.render(f"{self.label}: {self.value}", True, TEXT_COLOR)
+        screen.blit(self.label_surface, self.label_rect)
+
+        pygame.draw.rect(screen, (180, 180, 180), self.rect)
+
+        pos_ratio = (self.value - self.min) / (self.max - self.min)
+        handle_x = self.rect.x + int(pos_ratio * self.rect.width)
+        handle_center = (handle_x, self.rect.y + self.rect.height // 2)
+        pygame.draw.circle(screen, (255, 100, 100), handle_center, self.handle_radius)
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos):
+            self.dragging = True
+        elif event.type == pygame.MOUSEBUTTONUP:
+            self.dragging = False
+        elif event.type == pygame.MOUSEMOTION and self.dragging:
+            rel_x = event.pos[0] - self.rect.x
+            rel_x = max(0, min(self.rect.width, rel_x))
+            ratio = rel_x / self.rect.width
+            raw_value = self.min + ratio * (self.max - self.min)
+            stepped_value = round(raw_value / self.step) * self.step
+            self.value = int(max(self.min, min(self.max, stepped_value)))
+
+def show_settings_menu():
+    pygame.init()
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption("Impostazioni di Gioco")
+    font = pygame.font.Font(None, 36)
+    screen_rect = screen.get_rect()
+
+    slider_labels = [
+        ("Durata Partita (s)", 10, 120, 5, 30),
+        ("Numero di Ostacoli", 5, 22, 1, 10),
+        ("Velocità Giocatore", 1, 10, 1, 5),
+    ]
+
+    sliders = [OptionSlider(label, min_val, max_val, step, default, font, screen_rect, i, len(slider_labels))
+               for i, (label, min_val, max_val, step, default) in enumerate(slider_labels)]
+
+    button_width = 200
+    button_height = 50
+    start_button = pygame.Rect(0, 0, button_width, button_height)
+    start_button.centerx = screen_rect.centerx
+    start_button.y = sliders[-1].rect.bottom + 50
+
+    clock = pygame.time.Clock()
+
+    while True:
+        screen.fill((20, 20, 50))
+
+        for slider in sliders:
+            slider.draw(screen)
+
+        pygame.draw.rect(screen, (50, 150, 50), start_button, border_radius=8)
+        text_surf = font.render("Avvia Gioco", True, (255, 255, 255))
+        text_rect = text_surf.get_rect(center=start_button.center)
+        screen.blit(text_surf, text_rect)
+
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            for slider in sliders:
+                slider.handle_event(event)
+
+            if event.type == pygame.MOUSEBUTTONDOWN and start_button.collidepoint(event.pos):
+                return {
+                    "TIME_LIMIT": sliders[0].value,
+                    "OBSTACLES_NUMBER": sliders[1].value,
+                    "RECT_SPEED": sliders[2].value
+                }
+
+        clock.tick(60)
+
+
 def draw_text(screen, text, font, color, x, y, center=False, shadow=False):
     """Funzione per disegnare testo con opzioni aggiuntive."""
     text_surface = font.render(text, True, color)
@@ -102,3 +205,8 @@ def show_game_over(screen, font, score):
                 sys.exit()
 
         clock.tick(60)  # Limita il frame rate a 60 FPS
+
+
+if __name__ == "__main__":
+    pygame.init()
+    show_settings_menu()
