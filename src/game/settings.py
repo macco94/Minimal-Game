@@ -1,4 +1,3 @@
-import os
 
 # Dimensioni dello schermo
 WIDTH, HEIGHT = 800, 600
@@ -19,7 +18,7 @@ RECT_SPEED = 1
 TARGET_WIDTH, TARGET_HEIGHT = 50, 50
 
 # Impostazioni del gioco
-OBSTACLES_NUMBER = 10  # massimo 22
+OBSTACLES_NUMBER = 22  # massimo 22
 TIME_LIMIT = 30
 
 # Impostazioni del font

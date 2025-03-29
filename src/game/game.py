@@ -16,22 +16,11 @@ class Game:
         self.font = pygame.font.Font(FONT_PATH, FONT_SIZE)
         self.success_sound = pygame.mixer.Sound("assets/sounds/success.mp3")
 
-        # Creazione degli oggetti di gioco
-        self.obstacles = generate_obstacles()
-        self.player = Player(self.obstacles)
-        self.target = Target(self.obstacles)
-
-        self.score = 0
-        self.time_left = TIME_LIMIT
-        self.pulse_effect = 0
-
         self.reset()
 
-        # Timer
         self.TIMER_EVENT = pygame.USEREVENT + 1
         pygame.time.set_timer(self.TIMER_EVENT, 1000)
 
-        # Background pre-renderizzato
         self.background = create_gradient_background()
 
 

@@ -7,6 +7,4 @@ Thumbs.db
 *.bak
 *.tmp
 *.temp
-/src/__pycache__/
-/src/old/
-/src/game/__pycache__/
+__pycache__/
